@@ -4,12 +4,13 @@ import LeftContainer from "../components/global/left-container/LeftContainer";
 import { useData } from "../context/ContextApi";
 import { geteMailDetails } from "../services/getSpeficEmailDetails";
 import EmailBody from "../components/ui/EmailBody";
+import DOMPurify from "dompurify";
 // import Loader from "../components/global/loader/Loader";
 
 const EmailDetails = () => {
   const { inbox } = useData();
   const location = useLocation();
-  const [response, setResponse] = useState(null);
+  const [response, setResponse] = useState("");
   const [currentId, setCurrentId] = useState(location?.state.id || ""); // Initialize with the state from location
 
   // Fetch email details by ID
@@ -20,7 +21,9 @@ const EmailDetails = () => {
       try {
         const data = await geteMailDetails(currentId);
         if (data) {
-          setResponse(data);
+          // Sanitize the response body
+          const sanitizedHTML = DOMPurify.sanitize(data.body);
+          setResponse(sanitizedHTML);
         }
       } catch (error) {
         console.error("Failed to fetch email details:", error);
@@ -37,6 +40,8 @@ const EmailDetails = () => {
     setCurrentId(id); // Update the current ID when a new email is selected
   };
 
+  console.log(response);
+
   return (
     <section className="px-10 flex flex-col md:flex-row bg-gray-100 min-h-screen">
       {/* Left Sidebar */}
@@ -49,9 +54,11 @@ const EmailDetails = () => {
             index={location?.state.id || ""}
             id={location?.state.id || ""}
           />
-        ): (
+        ) : (
           <div className="text-center text-gray-500 flex justify-center h-[500px] items-center">
-            <p className="border border-border px-20 py-4 bg-white rounded-lg">🥹 Opps! Email not found</p>
+            <p className="border border-border px-20 py-4 bg-white rounded-lg">
+              🥹 Opps! Email not found
+            </p>
           </div>
         )}
       </div>
@@ -63,7 +70,7 @@ const EmailDetails = () => {
             {response ? (
               <div
                 className="text-gray-800"
-                dangerouslySetInnerHTML={{ __html: response.body }}
+                dangerouslySetInnerHTML={{ __html: response }}
               />
             ) : (
               <p className="text-gray-500">Loading email content...</p>
