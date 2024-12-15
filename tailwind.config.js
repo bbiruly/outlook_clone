@@ -1,10 +1,10 @@
-const colors = require('tailwindcss/colors');
+import colors from 'tailwindcss/colors';
 
-module.exports = {
+export default {
   content: [
     "./index.html",
     "./src/**/*.{js,ts,jsx,tsx}",
-  ], // Correct paths for Vite
+  ],
   theme: {
     extend: {
       colors: {
@@ -14,7 +14,7 @@ module.exports = {
         text: '#636363',
         'filter-btn': '#e1e4ea',
         'read-bg': '#f2f2f2',
-        ...colors, // Add the Tailwind's color palette (optional)
+        ...colors, // Add Tailwind's color palette (optional)
       },
     },
   },
